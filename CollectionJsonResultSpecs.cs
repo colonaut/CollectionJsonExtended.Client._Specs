@@ -31,6 +31,7 @@ namespace CollectionJsonExtended.Client._Specs
         public string SomeString { get; set; }
     }
 
+
     internal class FakeController : Controller
     {
         public CollectionJsonResult<FakeEntityWithIntId>
