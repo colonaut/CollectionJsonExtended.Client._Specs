@@ -87,6 +87,18 @@ namespace CollectionJsonExtended.Client._Specs
                     SomeString = "Some string"
                 });
         }
+
+        //TODO: manage the reader!
+        public CollectionJsonResult<FakeEntityWithStringId>
+            CreateMethod(CollectionJsonReader<FakeEntityWithStringId> reader)
+        {
+            return new CollectionJsonResult<FakeEntityWithStringId>(
+                new FakeEntityWithStringId
+                {
+                    Id = "myStringId",
+                    SomeString = "Some string"
+                });
+        }
     }
 
 
@@ -99,6 +111,7 @@ namespace CollectionJsonExtended.Client._Specs
         protected static ActionDescriptor[] GetMethodWithStringIdParamButMethodIntActionDescriptors;
         protected static ActionDescriptor[] GetMethodWithPrivateIntIdEntityAndMethodIntActionDescriptors;
         protected static ActionDescriptor[] GetMethodWithNoParamActionDescriptors;
+        protected static ActionDescriptor[] CreateMethodActionDescriptors;
         protected static DirectRouteProviderContext DirectRouteProviderContext;
         protected static DirectRouteBuilder DirectRouteBuilder;
         
@@ -158,6 +171,14 @@ namespace CollectionJsonExtended.Client._Specs
                             ControllerDescriptor)
                     };
 
+                CreateMethodActionDescriptors =
+                    new ActionDescriptor[]
+                    {
+                        new ReflectedActionDescriptor(typeof (FakeController)
+                            .GetMethod("CreateMethod"),
+                            "CreateMethod",
+                            ControllerDescriptor)
+                    };
             };
         
     }
@@ -247,7 +268,7 @@ namespace CollectionJsonExtended.Client._Specs
 
     [Subject(typeof(CollectionJsonRouteAttribute),
         "CollectionJsonAttribute.CreateRoute")]
-    internal class When_the_Attribute_has_valid_input_for_controller_int_method
+    internal class When_the_Attribute_has_valid_input_for_for_Is_Item_and_controller_int_method
         : CollectionJsonRouteAttributeContext
     {
         Establish context =
@@ -300,7 +321,7 @@ namespace CollectionJsonExtended.Client._Specs
 
     [Subject(typeof(CollectionJsonRouteAttribute),
         "RouteInfo creation in CollectionJsonRouteAttribute instance (string emthod)")]
-    internal class When_the_Attribute_has_valid_input_for_controller_string_method
+    internal class When_the_Attribute_has_valid_input_for_Is_Item_and_for_controller_string_method
         : CollectionJsonRouteAttributeContext
     {
         Establish context =
@@ -344,6 +365,63 @@ namespace CollectionJsonExtended.Client._Specs
 
         It shouuld_foo3 =
             () => TheRouteInfo.PrimaryKeyTemplate.ShouldEqual("{myPrimaryKeyIsIdAndAString}");
+
+
+    }
+
+    //TODO: spec and code for exception, if param is not a reader!
+    [Subject(typeof(CollectionJsonRouteAttribute),
+        "RouteInfo creation in CollectionJsonRouteAttribute instance (string emthod)")]
+    internal class When_the_Attribute_has_valid_input_for_Is_Create_and_for_controller_empty_method
+        : CollectionJsonRouteAttributeContext
+    {
+        Establish context =
+            () =>
+            {
+                new SingletonFactory<UrlInfoCollection>(() => new UrlInfoCollection());
+
+                TheAttribute =
+                    new CollectionJsonRouteAttribute(Is.Create, "some/path");
+
+                DirectRouteProviderContext =
+                    new DirectRouteProviderContext("", "",
+                        CreateMethodActionDescriptors,
+                        new DefaultInlineConstraintResolver(), true);
+
+                TheRouteEntry =
+                    TheAttribute.CreateRoute(DirectRouteProviderContext);
+
+                TheUrlInfoCollection =
+                    SingletonFactory<UrlInfoCollection>.Instance
+                        .Find<RouteInfo>(typeof(FakeEntityWithStringId))
+                        .ToList();
+            };
+
+        Because of =
+            () =>
+            {
+                TheRouteInfo =
+                    TheUrlInfoCollection[0];
+                //TheAttribute.CreateRouteInfo(DirectRouteBuilder);
+            };
+
+        It should_foo =
+            () => TheUrlInfoCollection.Count.ShouldEqual(1);
+
+        It should_foo1 =
+            () => TheUrlInfoCollection[0].ShouldBeOfType<RouteInfo>();
+
+        It should_foo2 =
+            () => TheRouteInfo.Kind.ShouldEqual(Is.Create);
+
+        private It should_foo5 =
+            () => TheRouteInfo.VirtualPath.ShouldEqual("some/path");
+
+        private It shouuld_foo3 =
+            () => TheRouteInfo.PrimaryKeyProperty.ShouldBeNull();
+
+        private It shouuld_foo4 =
+            () => TheRouteInfo.PrimaryKeyTemplate.ShouldBeNull();
 
 
     }
