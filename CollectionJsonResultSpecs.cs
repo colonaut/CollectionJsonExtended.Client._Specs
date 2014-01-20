@@ -88,7 +88,7 @@ namespace CollectionJsonExtended.Client._Specs
                 });
         }
 
-        //TODO: manage the reader!
+        //TODO: create: manage the reader (template)!
         public CollectionJsonResult<FakeEntityWithStringId>
             CreateMethod(CollectionJsonReader<FakeEntityWithStringId> reader)
         {
