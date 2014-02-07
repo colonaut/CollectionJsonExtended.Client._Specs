@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Web.Mvc;
 using System.Web.Mvc.Routing;
 using CollectionJsonExtended.Client.Attributes;
 using CollectionJsonExtended.Core;
 using Machine.Fakes;
 using Machine.Specifications;
-using Rhino.Mocks;
 
 // ReSharper disable InconsistentNaming
 namespace CollectionJsonExtended.Client._Specs
@@ -112,8 +110,8 @@ namespace CollectionJsonExtended.Client._Specs
         protected static ActionDescriptor[] GetMethodWithPrivateIntIdEntityAndMethodIntActionDescriptors;
         protected static ActionDescriptor[] GetMethodWithNoParamActionDescriptors;
         protected static ActionDescriptor[] CreateMethodActionDescriptors;
-        protected static DirectRouteProviderContext DirectRouteProviderContext;
-        protected static DirectRouteBuilder DirectRouteBuilder;
+        protected static DirectRouteFactoryContext DirectRouteFactoryContext;
+        protected static IDirectRouteBuilder DirectRouteBuilder;
         
         protected static RouteInfo TheRouteInfo;
         protected static RouteEntry TheRouteEntry;
@@ -195,9 +193,14 @@ namespace CollectionJsonExtended.Client._Specs
                 const string template = "some/path/{id}";
                 TheAttribute =
                     new CollectionJsonRouteAttribute(Is.Item, template);
-                DirectRouteBuilder =
-                    new DirectRouteBuilder(GetMethodWithStringIdParamButMethodIntActionDescriptors,
-                        true) {Template = template};
+                
+                DirectRouteFactoryContext = new DirectRouteFactoryContext("", "",
+                    GetMethodWithStringIdParamButMethodIntActionDescriptors,
+                    new DefaultInlineConstraintResolver(), true);
+
+                DirectRouteBuilder = DirectRouteFactoryContext.CreateBuilder(template);
+                //new IDirectRouteBuilder(GetMethodWithStringIdParamButMethodIntActionDescriptors,
+                //    true) { Template = template };
             };
         
         static Exception TheException;
@@ -222,9 +225,14 @@ namespace CollectionJsonExtended.Client._Specs
                 const string template = "some/path/{id}";
                 TheAttribute =
                     new CollectionJsonRouteAttribute(Is.Item, template);
-                DirectRouteBuilder =
-                    new DirectRouteBuilder(GetMethodWithPrivateIntIdEntityAndMethodIntActionDescriptors,
-                        true) { Template = template };
+
+                DirectRouteFactoryContext = new DirectRouteFactoryContext("", "",
+                    GetMethodWithPrivateIntIdEntityAndMethodIntActionDescriptors,
+                    new DefaultInlineConstraintResolver(), true);
+
+                DirectRouteBuilder = DirectRouteFactoryContext.CreateBuilder(template);
+                    //new DirectRouteBuilder(GetMethodWithPrivateIntIdEntityAndMethodIntActionDescriptors,
+                    //    true) { Template = template };
             };
 
         static Exception TheException;
@@ -249,9 +257,14 @@ namespace CollectionJsonExtended.Client._Specs
                 const string template = "some/path";
                 TheAttribute =
                     new CollectionJsonRouteAttribute(Is.Item, template);
-                DirectRouteBuilder =
-                    new DirectRouteBuilder(GetMethodWithNoParamActionDescriptors,
-                        true) { Template = template };
+
+                DirectRouteFactoryContext = new DirectRouteFactoryContext("", "",
+                    GetMethodWithNoParamActionDescriptors,
+                    new DefaultInlineConstraintResolver(), true);
+
+                DirectRouteBuilder = DirectRouteBuilder = DirectRouteFactoryContext.CreateBuilder(template);
+                //new DirectRouteBuilder(GetMethodWithNoParamActionDescriptors,
+                //    true) { Template = template };
             };
 
         static Exception TheException;
@@ -279,21 +292,21 @@ namespace CollectionJsonExtended.Client._Specs
 
                 var singletonFactory =
                     new SingletonFactory<UrlInfoCollection>(() => new UrlInfoCollection());
-                
+
                 TheAttribute =
                     new CollectionJsonRouteAttribute(Is.Item, "some/path/{myPrimaryKeyIsId}");
 
-                DirectRouteProviderContext =
-                    new DirectRouteProviderContext("", "",
+                DirectRouteFactoryContext =
+                    new DirectRouteFactoryContext("", "",
                         GetMethodWithIntIdParamActionDescriptors,
                         new DefaultInlineConstraintResolver(), true);
 
                 TheRouteEntry =
-                    TheAttribute.CreateRoute(DirectRouteProviderContext);
+                    TheAttribute.CreateRoute(DirectRouteFactoryContext);
 
                 TheUrlInfoCollection =
                     singletonFactory.GetInstance()
-                        .Find<RouteInfo>(typeof (FakeEntityWithIntId))
+                        .Find<RouteInfo>(typeof(FakeEntityWithIntId))
                         .ToList();
             };
 
@@ -332,13 +345,13 @@ namespace CollectionJsonExtended.Client._Specs
                 TheAttribute =
                     new CollectionJsonRouteAttribute(Is.Item, "some/path/{myPrimaryKeyIsIdAndAString}");
 
-                DirectRouteProviderContext =
-                    new DirectRouteProviderContext("", "",
+                DirectRouteFactoryContext =
+                    new DirectRouteFactoryContext("", "",
                         GetMethodWithStringIdParamActionDescriptors,
                         new DefaultInlineConstraintResolver(), true);
 
                 TheRouteEntry =
-                    TheAttribute.CreateRoute(DirectRouteProviderContext);
+                    TheAttribute.CreateRoute(DirectRouteFactoryContext);
 
                 TheUrlInfoCollection =
                     SingletonFactory<UrlInfoCollection>.Instance
@@ -383,13 +396,13 @@ namespace CollectionJsonExtended.Client._Specs
                 TheAttribute =
                     new CollectionJsonRouteAttribute(Is.Create, "some/path");
 
-                DirectRouteProviderContext =
-                    new DirectRouteProviderContext("", "",
+                DirectRouteFactoryContext =
+                    new DirectRouteFactoryContext("", "",
                         CreateMethodActionDescriptors,
                         new DefaultInlineConstraintResolver(), true);
 
                 TheRouteEntry =
-                    TheAttribute.CreateRoute(DirectRouteProviderContext);
+                    TheAttribute.CreateRoute(DirectRouteFactoryContext);
 
                 TheUrlInfoCollection =
                     SingletonFactory<UrlInfoCollection>.Instance
