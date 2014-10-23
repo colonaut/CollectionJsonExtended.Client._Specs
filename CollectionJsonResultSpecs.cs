@@ -11,6 +11,82 @@ using Machine.Specifications;
 // ReSharper disable InconsistentNaming
 namespace CollectionJsonExtended.Client._Specs
 {
+
+    //public class InputBase
+    //{
+    //    public int Month;
+    //}
+
+    //[Subject(typeof(SubscriptionManager))]
+    //public abstract class TestBase<TInput> : WithFakes
+    //    where TInput : InputBase, new()
+    //{
+    //    protected static TInput Input = new TInput();
+
+    //    static bool Result;
+    //    static ProductSubscription ProductSubscription;
+    //    static ISubscriptionDataProvider SubscriptionDataProvider;
+
+    //    Establish context = () =>
+    //    {
+    //        IEnumerable<SubscriptionItem> subscriptionitems =
+    //            new List<SubscriptionItem>
+    //                {
+    //                    new SubscriptionItem
+    //                    {
+    //                        SubscriptionId = 123,
+    //                        IsCurrent = true,
+    //                        RunningNo = 1,
+    //                        ProductId = 456
+    //                    }
+    //                };
+
+    //        SubscriptionDataProvider = An<ISubscriptionDataProvider>();
+
+    //        SubscriptionDataProvider.WhenToldTo(x => x.SubscriptionId).Return(123);
+    //        SubscriptionDataProvider.WhenToldTo(x => x.CurrentSubscriptionItems).Return(subscriptionitems);
+    //        SubscriptionDataProvider.WhenToldTo(x => x.IntervalDayCnt).Return(0);
+    //        SubscriptionDataProvider.WhenToldTo(x => x.IntervalMonthCnt).Return(Input.Month);
+
+
+    //        ProductSubscription = new ProductSubscription
+    //        {
+    //            ProductId = 456,
+    //            IntervalMonthCnt = 12,
+    //            IntervalDayCnt = 0,
+    //            StartIntervalMonthCnt = 12,
+    //            StartIntervalDayCnt = 0
+    //        };
+    //    };
+
+
+    //    Because of =
+    //        () => Result =
+    //            SubscriptionManager
+    //                .CheckIntervalLength(SubscriptionDataProvider,
+    //                    0,
+    //                    456,
+    //                    true,
+    //                    ProductSubscription);
+
+    //    It should_return_true = () => Result.ShouldBeTrue();
+
+    //}
+
+
+    //public class TestA : TestBase<TestA.InputA>
+    //{
+    //    public class InputA : InputBase
+    //    {
+    //        public InputA()
+    //        {
+    //            this.Month = 12;
+    //        }
+    //    }
+    //}
+
+    
+    
     internal class FakeEntityWithIntId
     {
         public int Id { get; set; }
